@@ -1,0 +1,19 @@
+# .htaccess — ProofOfPen (Apache, Hostinger). Repo root = web root.
+Options -Indexes
+
+# Protect internals: no direct access to lib/, src/, tests/, migrations/, data/
+RewriteEngine On
+RewriteRule ^(lib|src|tests|migrations|data)/ - [F,L]
+
+# Extensionless PHP endpoints: /api/create -> /api/create.php, /verify -> /verify.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
+
+# Pretty pack URLs: /p/<ID> -> /p.php?id=<ID>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^p/([0-9A-Za-z]{6,16})$ /p.php?id=$1 [L]
+
+# 404 via app
+ErrorDocument 404 /404.php
