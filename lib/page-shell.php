@@ -32,5 +32,6 @@ HTML;
 <?= $body ?>
 </main>
 <footer class="site-footer"><span>ProofOfPen — process receipts, not detection. MVP Lab.</span></footer>
+<div id="toast" role="status"></div>
 </body>
 </html>

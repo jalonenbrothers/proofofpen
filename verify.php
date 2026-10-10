@@ -31,23 +31,33 @@ ob_start();
   </div>
   <div id="tab-upload" class="tabpane" hidden>
     <input type="file" id="pack-file" accept=".html,.json">
-    <button id="verify-file">Verify</button>
+    <button id="verify-file-btn">Verify integrity</button>
   </div>
 </section>
 <section id="result" hidden>
   <div id="result-banner" class="banner"></div>
+  <p class="small" id="verdict-local"></p>
+  <ul id="verdict-notes" class="small" hidden></ul>
   <section class="card">
     <h2>Replay</h2>
     <div><button id="play">Play</button> <button class="sec" id="speed">Speed 1×</button></div>
-    <input type="range" id="scrub" min="0" max="1000" value="0">
+    <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Replay position">
     <div id="replay-text" class="essay"></div>
     <p class="small" id="replay-note"></p>
+  </section>
+  <section class="card">
+    <h2>Bursts</h2>
+    <p class="small">Typing bursts with sustained speed above 12 chars/s are flagged as
+    unusually fast input. That is a fact about the receipt, not a judgment of how the
+    text was produced.</p>
+    <div id="burst-list"></div>
   </section>
   <section class="card">
     <h2>Final text</h2>
     <div id="final-text" class="essay"></div>
   </section>
 </section>
+<p class="banner bad small" id="verify-error" hidden></p>
 <script src="/assets/js/verify-ui.js"></script>
 <?php
 $body = ob_get_clean();

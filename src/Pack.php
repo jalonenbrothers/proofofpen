@@ -152,8 +152,10 @@ final class Pack
     /** Pack IDs: 12 chars, unambiguous base32 (Crockford, no I/L/O/U), derived from the head hash. Pure PHP (no gmp). */
     public static function packId(string $headHash, int $t): string
     {
-        // 12 base32 chars = 60 bits: 8 bytes of head hash (64 bits, truncated) + time salt.
-        $bin = hex2bin(substr($headHash, 0, 16)) . pack('J', $t); // 16 bytes total
+        // 12 base32 chars = 60 bits: mix 4 bytes of head hash with 4 bytes of
+        // time salt BEFORE encoding, so identical sessions (tests) still get
+        // distinct ids on retry. Pure PHP (no gmp).
+        $bin = substr(hash('sha256', $headHash . '|' . $t, true), 0, 8) . substr(pack('J', $t), 4, 4);
         $alpha = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
         $out = '';
         $bits = 0; $val = 0;

@@ -47,7 +47,17 @@ try {
 }
 
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$base = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
+$base = $scheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
+// Web root is the repo root (repo root = web root). Derive from the script
+// location, stripping the known script path suffix (e.g. /api/create.php,
+// /p.php) so /api, /p, /download URLs are correct in dev-router AND Apache.
+$script = $_SERVER['SCRIPT_NAME'] ?? '/index.php';
+foreach (['/api/create.php', '/index.php', '/p.php'] as $suffix) {
+    if (str_ends_with($script, $suffix)) {
+        $base = $base . rtrim(substr($script, 0, 0 - strlen($suffix)), '/');
+        break;
+    }
+}
 
 pop_json([
     'ok'   => true,
