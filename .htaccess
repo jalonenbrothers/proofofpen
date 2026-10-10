@@ -5,15 +5,22 @@ Options -Indexes
 RewriteEngine On
 RewriteRule ^(lib|src|tests|migrations|data)/ - [F,L]
 
+# Pretty pack URLs: /p/<ID> -> /p.php?id=<ID> (checked BEFORE the generic
+# extensionless rule so it cannot loop; !-f/!-d guards keep /p/<ID> itself
+# from being re-appended with .php).
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^p/([0-9A-Za-z]{6,16})$ /p.php?id=$1 [L]
+
+# Any other malformed /p/<...> path falls through to the 404 page.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^p(/|$) - [R=404,L]
+
 # Extensionless PHP endpoints: /api/create -> /api/create.php, /verify -> /verify.php
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.+)$ $1.php [L]
-
-# Pretty pack URLs: /p/<ID> -> /p.php?id=<ID>
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^p/([0-9A-Za-z]{6,16})$ /p.php?id=$1 [L]
 
 # 404 via app
 ErrorDocument 404 /404.php
